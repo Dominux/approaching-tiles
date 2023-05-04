@@ -45,7 +45,7 @@ jobs:
         run: cargo install trunk
         
       - name: Build project
-        run: make build
+        run: cd frontend && trunk build && cd -
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
