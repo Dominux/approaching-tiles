@@ -9,18 +9,16 @@ pub fn Playground(cx: Scope) -> impl IntoView {
     let (tiles, _set_tiles) = create_signal(cx, initial_tiles);
 
     view! { cx,
-        <ul class="playground">
+        <table class="playground">
             <For
                 each=tiles
                 key=|tile| tile.0
                 view=move |cx, _tile| {
                     view! {cx,
-                        <li>
-                            <TilesLine/>
-                        </li>
+                        <TilesLine/>
                     }
                 }
             />
-        </ul>
+        </table>
     }
 }
