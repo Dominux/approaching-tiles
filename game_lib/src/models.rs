@@ -1,14 +1,15 @@
-use crate::types::{ColumnLength, TileKey};
+use crate::types::{ColumnLength, TileID, TileKey};
 
 /// Atomic game unit
 #[derive(Debug, Clone)]
 pub struct Tile {
+    pub id: TileID,
     pub key: TileKey,
 }
 
 impl Tile {
-    pub fn new(key: TileKey) -> Self {
-        Self { key }
+    pub fn new(id: TileID, key: TileKey) -> Self {
+        Self { id, key }
     }
 }
 
@@ -30,6 +31,9 @@ impl TilesColumn {
         self.0.push(tile)
     }
 
+    /// Removes given indeces
+    ///
+    /// In case of out of range indeces, simply skips them
     fn remove_indeces(&mut self, indeces: Vec<ColumnLength>) {
         self.0 = self
             .0
