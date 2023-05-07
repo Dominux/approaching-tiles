@@ -1,6 +1,3 @@
 {
-  "rust-analyzer.linkedProjects": [
-    "./frontend/Cargo.toml",
-    "./game_lib/Cargo.toml"
-  ]
+  "rust-analyzer.linkedProjects": ["./frontend/Cargo.toml"]
 }
