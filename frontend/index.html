@@ -7,12 +7,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Approaching tiles</title>
   <style>
+    :root {
+      --tile-gap: 0.5rem;
+    }
+
     .playground {
-      padding: 0;
-      margin: 0 auto;
-      width: fit-content;
+      display: flex;
+      justify-content: center;
+      gap: var(--tile-gap);
       cursor: pointer;
       user-select: none;
+    }
+
+    .tiles_column {
+      display: flex;
+      flex-direction: column;
+      gap: var(--tile-gap);
     }
 
     .tile {
@@ -20,11 +30,6 @@
       font-size: x-large;
       background: aqua;
     }
-
-    .hidden {
-      visibility: hidden;
-    }
-
   </style>
 </head>
 
