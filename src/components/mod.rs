@@ -2,4 +2,4 @@
 pub mod App;
 pub mod Playground;
 pub mod Tile;
-pub mod TilesLine;
+pub mod TilesColumn;

@@ -2,6 +2,7 @@ use leptos::*;
 
 use crate::components::App::*;
 
+mod common;
 mod components;
 
 fn main() {
