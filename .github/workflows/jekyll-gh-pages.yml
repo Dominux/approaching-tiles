@@ -32,7 +32,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Use pidaRust
+      - name: Use pidaRust, net blyat, tvou mamashu nahui!
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
