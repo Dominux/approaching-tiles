@@ -13,6 +13,7 @@ pub fn TilesColumn(
     is_add_row: ReadSignal<bool>,
 ) -> impl IntoView {
     let initial_tiles: Vec<_> = (0..7)
+        .rev()
         .map(|id| (id, get_random_key(), create_signal(cx, false)))
         .collect();
     let (tiles, set_tiles) = create_signal(cx, initial_tiles);
@@ -33,7 +34,7 @@ pub fn TilesColumn(
     create_effect(cx, move |_| {
         if is_add_row() {
             set_tiles.update(|tiles| {
-                let next_id = tiles.last().map_or(0, |(id, _, _)| id + 1);
+                let next_id = tiles.first().map_or(0, |(id, _, _)| id + 1);
                 let next_tile = (next_id, get_random_key(), create_signal(cx, false));
                 tiles.insert(0, next_tile)
             })
