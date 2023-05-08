@@ -14,7 +14,6 @@ where
         <div
             class="tile"
             class:selected=move || is_selected()
-            class:diselected=move || !is_selected()
             on:click=move |_| on_click()
         >
             {cover}
