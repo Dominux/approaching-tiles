@@ -45,7 +45,7 @@ jobs:
         run: cargo install trunk
 
       - name: Build project
-        run: mv Trunk.toml.build Trunk.toml && trunk build
+        run: mv Trunk.toml.spec Trunk.toml && trunk build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
