@@ -1,5 +1,5 @@
 dev:
-	cd frontend && trunk serve --open || true && cd -
+	trunk serve --open
 
 lint:
-	cd frontend && cargo clippy || true && cd -
+	cargo clippy
