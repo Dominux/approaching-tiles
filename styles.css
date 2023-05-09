@@ -1,0 +1,38 @@
+:root {
+  --tile-gap: 0.3rem;
+}
+
+.playground_wrapper {
+  margin: 0 auto;
+  padding: 0.2rem 0.5rem;
+  height: 50rem;
+  border: 0.3rem red solid;
+  width: fit-content;
+}
+
+.playground {
+  display: flex;
+  justify-content: center;
+  gap: var(--tile-gap);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tiles_column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tile-gap);
+}
+
+.tile {
+  padding: 0.5rem;
+  font-size: 2rem;
+  background: lightcyan;
+  border: 0.3rem transparent solid;
+  border-radius: 15%;
+}
+
+.selected {
+  border-color: orange;
+}

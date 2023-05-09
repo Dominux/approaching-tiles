@@ -30,18 +30,20 @@ pub fn Playground(cx: Scope) -> impl IntoView {
 
     let view = view! { cx,
         <h1>{"Score: "}{score}</h1>
-        <div class="playground">
-            {
-                cols.iter()
-                    .map(|(is_add_row, _)| view! {cx,
-                        <TilesColumn
-                            is_add_row=*is_add_row
-                            selected_keys
-                            set_selected_keys
-                            checking_result
-                        />})
-                    .collect::<Vec<_>>()
-            }
+        <div class="playground_wrapper">
+            <div class="playground">
+                {
+                    cols.iter()
+                        .map(|(is_add_row, _)| view! {cx,
+                            <TilesColumn
+                                is_add_row=*is_add_row
+                                selected_keys
+                                set_selected_keys
+                                checking_result
+                            />})
+                        .collect::<Vec<_>>()
+                }
+            </div>
         </div>
     };
 
