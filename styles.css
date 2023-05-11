@@ -1,22 +1,38 @@
 :root {
-  --tile-gap: 0.3rem;
+  --tile-gap: 0.4vmax;
+  --tile-padding: 0.6vmax;
+  --tile-fontsize: 3.5vmax;
+  --tile-bordersize: 0.3vmax;
+  --interval: 3s;
 }
 
-.playground_wrapper {
-  margin: 0 auto;
-  padding: 0.2rem 0.5rem;
-  height: 50rem;
-  border: 0.3rem red solid;
-  width: fit-content;
+body {
+  margin: 0;
+}
+
+.playground_header {
+  width: 100vw;
+  padding: 3vh 0;
+  text-align: center;
+  background-color: white;
+}
+
+.playground_header > h1 {
+  margin: 0;
 }
 
 .playground {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 50%;
   display: flex;
   justify-content: center;
   gap: var(--tile-gap);
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  animation: going-down var(--interval) linear infinite;
 }
 
 .tiles_column {
@@ -26,13 +42,29 @@
 }
 
 .tile {
-  padding: 0.5rem;
-  font-size: 2rem;
+  padding: var(--tile-padding);
+  font-size: var(--tile-fontsize);
   background: lightcyan;
-  border: 0.3rem transparent solid;
+  border: var(--tile-bordersize) transparent solid;
   border-radius: 15%;
 }
 
 .selected {
   border-color: orange;
+}
+
+@keyframes going-down {
+  from {
+    transform: translate(-50%, 0);
+  }
+
+  to {
+    transform: translate(
+      -50%,
+      calc(
+        var(--tile-fontsize) + var(--tile-gap) * 2 + var(--tile-bordersize) * 2 +
+          var(--tile-padding) * 2
+      )
+    );
+  }
 }

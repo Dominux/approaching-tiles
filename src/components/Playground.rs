@@ -29,21 +29,21 @@ pub fn Playground(cx: Scope) -> impl IntoView {
     });
 
     let view = view! { cx,
-        <h1>{"Score: "}{score}</h1>
-        <div class="playground_wrapper">
-            <div class="playground">
-                {
-                    cols.iter()
-                        .map(|(is_add_row, _)| view! {cx,
-                            <TilesColumn
-                                is_add_row=*is_add_row
-                                selected_keys
-                                set_selected_keys
-                                checking_result
-                            />})
-                        .collect::<Vec<_>>()
-                }
-            </div>
+        <div class="playground_header">
+            <h1>{"Score: "}{score}</h1>
+        </div>
+        <div class="playground">
+            {
+                cols.iter()
+                    .map(|(is_add_row, _)| view! {cx,
+                        <TilesColumn
+                            is_add_row=*is_add_row
+                            selected_keys
+                            set_selected_keys
+                            checking_result
+                        />})
+                    .collect::<Vec<_>>()
+            }
         </div>
     };
 
@@ -53,7 +53,7 @@ pub fn Playground(cx: Scope) -> impl IntoView {
                 set_is_add_row.set(true)
             }
         },
-        Duration::new(5, 0),
+        Duration::new(3, 0),
     );
 
     view
