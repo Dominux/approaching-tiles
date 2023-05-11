@@ -32,13 +32,15 @@ body {
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  animation: going-down var(--interval) linear infinite;
+  transform: translateX(-50%);
 }
 
 .tiles_column {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
   gap: var(--tile-gap);
+  animation: going-down var(--interval) linear infinite;
 }
 
 .tile {
@@ -55,12 +57,10 @@ body {
 
 @keyframes going-down {
   from {
-    transform: translate(-50%, 0);
   }
 
   to {
-    transform: translate(
-      -50%,
+    transform: translateY(
       calc(
         var(--tile-fontsize) + var(--tile-gap) * 2 + var(--tile-bordersize) * 2 +
           var(--tile-padding) * 2
