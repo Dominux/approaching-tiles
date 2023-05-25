@@ -1,3 +1,4 @@
+use std::f64;
 use std::time::Duration;
 
 use leptos::*;
@@ -6,46 +7,46 @@ use crate::{components::TilesColumn::*, enums::CheckingResult};
 
 #[component]
 pub fn Playground(cx: Scope) -> impl IntoView {
-    let (selected_keys, set_selected_keys) = create_signal(cx, Vec::<u8>::with_capacity(3));
-    let (score, set_score) = create_signal(cx, 0);
-    let (checking_result, set_checking_result) = create_signal(cx, CheckingResult::default());
-    let cols = (0..6).map(|_| create_signal(cx, false)).collect::<Vec<_>>();
+    let document = web_sys::window().unwrap().document().unwrap();
+    let canvas = document.get_element_by_id("canvas").unwrap();
+    let canvas: web_sys::HtmlCanvasElement = canvas
+        .dyn_into::<web_sys::HtmlCanvasElement>()
+        .map_err(|_| ())
+        .unwrap();
 
-    create_effect(cx, move |_| match selected_keys().len() {
-        3 => {
-            // checking result
-            let mut ch = CheckingResult::Leave;
-            if let Some((first, remaining)) = selected_keys().split_first() {
-                if remaining.iter().all(|key| *key == *first) {
-                    set_score.update(|v| *v += 3);
-                    ch = CheckingResult::Delete;
-                }
-            };
+    let context = canvas
+        .get_context("2d")
+        .unwrap()
+        .unwrap()
+        .dyn_into::<web_sys::CanvasRenderingContext2d>()
+        .unwrap();
 
-            set_checking_result.update(|v| *v = ch);
-            set_selected_keys.update(|keys| keys.clear())
-        }
-        _ => set_checking_result.set(CheckingResult::default()),
-    });
+    context.begin_path();
 
-    let view = view! { cx,
-        <div class="playground_header">
-            <h1>{"Score: "}{score}</h1>
-        </div>
-        <div class="playground">
-            {
-                cols.iter()
-                    .map(|(is_add_row, _)| view! {cx,
-                        <TilesColumn
-                            is_add_row=*is_add_row
-                            selected_keys
-                            set_selected_keys
-                            checking_result
-                        />})
-                    .collect::<Vec<_>>()
-            }
-        </div>
-    };
+    // Draw the outer circle.
+    context
+        .arc(75.0, 75.0, 50.0, 0.0, f64::consts::PI * 2.0)
+        .unwrap();
+
+    // Draw the mouth.
+    context.move_to(110.0, 75.0);
+    context.arc(75.0, 75.0, 35.0, 0.0, f64::consts::PI).unwrap();
+
+    // Draw the left eye.
+    context.move_to(65.0, 65.0);
+    context
+        .arc(60.0, 65.0, 5.0, 0.0, f64::consts::PI * 2.0)
+        .unwrap();
+
+    // Draw the right eye.
+    context.move_to(95.0, 65.0);
+    context
+        .arc(90.0, 65.0, 5.0, 0.0, f64::consts::PI * 2.0)
+        .unwrap();
+
+    context.stroke();
+
+    let view = view! { cx, ()};
 
     let _ = set_interval_with_handle(
         move || {

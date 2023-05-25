@@ -9,3 +9,12 @@ edition = "2021"
 leptos = "0.2.5"
 rand = "0.8.5"
 getrandom = { version = "0.2", features = ["js"] }
+
+[dependencies.web-sys]
+features = [
+  'CanvasRenderingContext2d',
+  'Document',
+  'Element',
+  'HtmlCanvasElement',
+  'Window',
+]
