@@ -17,15 +17,12 @@ body {
   background-color: white;
 }
 
-.playground_header > h1 {
-  margin: 0;
-}
-
-.playground {
+#canvas {
   position: absolute;
   z-index: -1;
   top: 0;
   left: 50%;
+  height: 80vh;
   display: flex;
   justify-content: center;
   gap: var(--tile-gap);
@@ -33,38 +30,4 @@ body {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   transform: translateX(-50%);
-}
-
-.tiles_column {
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: flex-end;
-  gap: var(--tile-gap);
-  animation: going-down var(--interval) linear infinite;
-}
-
-.tile {
-  padding: var(--tile-padding);
-  font-size: var(--tile-fontsize);
-  background: lightcyan;
-  border: var(--tile-bordersize) transparent solid;
-  border-radius: 15%;
-}
-
-.selected {
-  border-color: orange;
-}
-
-@keyframes going-down {
-  from {
-  }
-
-  to {
-    transform: translateY(
-      calc(
-        var(--tile-fontsize) + var(--tile-gap) * 2 + var(--tile-bordersize) * 2 +
-          var(--tile-padding) * 2
-      )
-    );
-  }
 }
