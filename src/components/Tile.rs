@@ -1,22 +1,3 @@
-use leptos::*;
+use web_sys::CanvasRenderingContext2d;
 
-#[component]
-pub fn Tile<F>(
-    cx: Scope,
-    cover: String,
-    is_selected: ReadSignal<bool>,
-    on_click: F,
-) -> impl IntoView
-where
-    F: Fn() + 'static,
-{
-    view! { cx,
-        <div
-            class="tile"
-            class:selected=move || is_selected()
-            on:click=move |_| on_click()
-        >
-            {cover}
-        </div>
-    }
-}
+pub fn draw_tile(ctx: &CanvasRenderingContext2d, init_top: u16, init_left: u16) {}
