@@ -1,13 +1,16 @@
-use wasm_bindgen::JsValue;
 use web_sys::CanvasRenderingContext2d;
 
 use crate::common::constants::TILE_SIZE;
 
 pub fn draw_tile(ctx: &CanvasRenderingContext2d, tile: &Tile) {
-    ctx.set_fill_style(&JsValue::from_str("red"));
-    ctx.fill_rect(tile.x, tile.y, TILE_SIZE.into(), TILE_SIZE.into())
+    ctx.fill_rect(tile.x, tile.y, TILE_SIZE.into(), TILE_SIZE.into());
+
+    if tile.is_selected {
+        ctx.stroke_rect(tile.x, tile.y, TILE_SIZE.into(), TILE_SIZE.into())
+    }
 }
 
+#[derive(Clone)]
 pub struct Tile {
     pub x: f64,
     pub y: f64,

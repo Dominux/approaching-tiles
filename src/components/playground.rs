@@ -1,12 +1,17 @@
-use std::{cell::RefCell, rc::Rc};
-
+use wasm_bindgen::JsValue;
 use web_sys::CanvasRenderingContext2d;
 
 use super::{tile::Tile, tiles_column::draw_tiles_column};
-use crate::common::constants::{MOVE_SIZE, TILE_GAP, TILE_SIZE_IN_MOVES, TILE_SIZE_N_GAP};
+use crate::common::{
+    canvas::clear_canvas,
+    constants::{
+        MOVE_SIZE, TILE_GAP, TILE_SELECTION_BORDER, TILE_SIZE, TILE_SIZE_IN_MOVES, TILE_SIZE_N_GAP,
+    },
+};
 
+#[derive(Clone)]
 pub struct Playground {
-    tiles_cols: Rc<RefCell<Vec<Vec<Tile>>>>,
+    tiles_cols: Vec<Vec<Tile>>,
     moves_till_tiles_addition: u16,
 }
 
@@ -24,7 +29,6 @@ impl Playground {
                     .collect()
             })
             .collect();
-        let tiles_cols = Rc::new(RefCell::new(tiles_cols));
 
         Self {
             tiles_cols,
@@ -33,15 +37,20 @@ impl Playground {
     }
 
     pub fn draw_playground(&self, ctx: &CanvasRenderingContext2d) {
-        Self::clear_canvas(ctx);
+        clear_canvas();
 
-        for col in self.tiles_cols.borrow().iter() {
+        // setting styles
+        ctx.set_fill_style(&JsValue::from_str("aqua"));
+        ctx.set_stroke_style(&JsValue::from_str("red"));
+        ctx.set_line_width(TILE_SELECTION_BORDER);
+
+        for col in self.tiles_cols.iter() {
             draw_tiles_column(ctx, col)
         }
     }
 
     pub fn move_playground(&mut self) {
-        for col in self.tiles_cols.borrow_mut().iter_mut() {
+        for col in self.tiles_cols.iter_mut() {
             for tile in col.iter_mut() {
                 tile.y += MOVE_SIZE
             }
@@ -51,7 +60,7 @@ impl Playground {
         self.moves_till_tiles_addition -= 1;
         if self.moves_till_tiles_addition == 0 {
             // adding next line
-            for (i, col) in self.tiles_cols.borrow_mut().iter_mut().enumerate() {
+            for (i, col) in self.tiles_cols.iter_mut().enumerate() {
                 let x = TILE_SIZE_N_GAP * i as u16 + TILE_GAP as u16;
                 let new_tile = Tile::new(x.into(), 0.0);
                 col.push(new_tile)
@@ -61,8 +70,18 @@ impl Playground {
         }
     }
 
-    fn clear_canvas(ctx: &CanvasRenderingContext2d) {
-        let canvas = ctx.canvas().unwrap();
-        canvas.set_width(canvas.width())
+    pub fn on_click(&mut self, x: f64, y: f64) {
+        for col in self.tiles_cols.iter_mut() {
+            for tile in col.iter_mut() {
+                if tile.x < x
+                    && tile.y < y
+                    && tile.x + TILE_SIZE as f64 > x
+                    && tile.y + TILE_SIZE as f64 > y
+                {
+                    tile.is_selected = true;
+                    return;
+                }
+            }
+        }
     }
 }

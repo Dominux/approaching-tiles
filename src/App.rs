@@ -2,38 +2,44 @@ use leptos::*;
 use wasm_bindgen::prelude::*;
 use web_sys::CanvasRenderingContext2d;
 
-use crate::components::playground::Playground;
+use crate::{
+    common::canvas::{canvas_event_listener, get_canvas, get_canvas_coords},
+    components::playground::Playground,
+};
 
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
-    let canvas: web_sys::HtmlCanvasElement = {
-        let document = web_sys::window().unwrap().document().unwrap();
-        document
-            .get_element_by_id("canvas")
-            .unwrap()
-            .dyn_into()
-            .unwrap()
-    };
-    let context = canvas
+    let init_playground = Playground::new();
+    let (playground, set_playground) = create_signal(cx, init_playground);
+
+    let ctx = get_canvas()
         .get_context("2d")
         .unwrap()
         .unwrap()
         .dyn_into::<web_sys::CanvasRenderingContext2d>()
         .unwrap();
 
-    let bounding_client_rect = canvas.get_bounding_client_rect();
+    // setting looped render
+    render(ctx, playground, set_playground);
 
-    let playground = Playground::new();
-
-    render(context, playground);
+    // listening clicks from user
+    canvas_event_listener(ev::click, move |e| {
+        let (x, y) = get_canvas_coords(e.x().into(), e.y().into());
+        // log!("x: {}; y: {}", x, y);
+        set_playground.update(|playground| playground.on_click(x, y))
+    });
 
     view! { cx,
         <h1 class="playground_header">{"Score"}</h1>
     }
 }
 
-fn render(ctx: CanvasRenderingContext2d, mut playground: Playground) {
-    playground.move_playground();
-    playground.draw_playground(&ctx);
-    request_animation_frame(|| render(ctx, playground))
+fn render(
+    ctx: CanvasRenderingContext2d,
+    playground: ReadSignal<Playground>,
+    set_playground: WriteSignal<Playground>,
+) {
+    set_playground.update(|playground| playground.move_playground());
+    playground.get_untracked().draw_playground(&ctx);
+    request_animation_frame(move || render(ctx, playground, set_playground))
 }

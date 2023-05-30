@@ -27,4 +27,6 @@ body {
   transform: translateX(-50%);
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+
+  border: 1px blue solid;
 }
