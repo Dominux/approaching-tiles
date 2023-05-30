@@ -1,6 +1,9 @@
+pub const SELECTION_MAX: usize = 3;
 pub const TILE_SIZE: u16 = 70;
+pub const TILE_HALF_SIZE: f64 = (TILE_SIZE / 2) as f64;
 pub const TILE_GAP: u16 = 5;
 pub const TILE_SELECTION_BORDER: f64 = 5.0;
 pub const TILE_SIZE_N_GAP: u16 = TILE_SIZE + TILE_GAP;
 pub const MOVE_SIZE: f64 = 0.3;
 pub const TILE_SIZE_IN_MOVES: u16 = (TILE_SIZE_N_GAP as f64 / MOVE_SIZE) as u16;
+pub const FONT: &str = "43px serif";

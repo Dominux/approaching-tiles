@@ -5,7 +5,8 @@ use super::{tile::Tile, tiles_column::draw_tiles_column};
 use crate::common::{
     canvas::clear_canvas,
     constants::{
-        MOVE_SIZE, TILE_GAP, TILE_SELECTION_BORDER, TILE_SIZE, TILE_SIZE_IN_MOVES, TILE_SIZE_N_GAP,
+        FONT, MOVE_SIZE, SELECTION_MAX, TILE_GAP, TILE_SELECTION_BORDER, TILE_SIZE,
+        TILE_SIZE_IN_MOVES, TILE_SIZE_N_GAP,
     },
 };
 
@@ -43,6 +44,7 @@ impl Playground {
         ctx.set_fill_style(&JsValue::from_str("aqua"));
         ctx.set_stroke_style(&JsValue::from_str("red"));
         ctx.set_line_width(TILE_SELECTION_BORDER);
+        ctx.set_font(FONT);
 
         for col in self.tiles_cols.iter() {
             draw_tiles_column(ctx, col)
@@ -71,15 +73,38 @@ impl Playground {
     }
 
     pub fn on_click(&mut self, x: f64, y: f64) {
+        let mut selected_symbols = Vec::with_capacity(SELECTION_MAX);
+
+        // selecting element and counting selected elements
         for col in self.tiles_cols.iter_mut() {
             for tile in col.iter_mut() {
-                if tile.x < x
+                if tile.is_selected {
+                    selected_symbols.push(&tile.symbol);
+                } else if tile.x < x
                     && tile.y < y
                     && tile.x + TILE_SIZE as f64 > x
                     && tile.y + TILE_SIZE as f64 > y
                 {
                     tile.is_selected = true;
-                    return;
+                    selected_symbols.push(&tile.symbol);
+                }
+            }
+        }
+
+        if selected_symbols.len() < SELECTION_MAX {
+            return;
+        }
+
+        // checking selected symbols identity
+        if let Some((first, remaining)) = selected_symbols.split_first() {
+            if remaining.iter().all(|key| *key == *first) {
+                todo!()
+            }
+        } else {
+            // unselecting
+            for col in self.tiles_cols.iter_mut() {
+                for tile in col.iter_mut() {
+                    tile.is_selected = false
                 }
             }
         }
