@@ -1,9 +1,11 @@
 use leptos::*;
 
-use crate::components::App::*;
+use crate::App::*;
 
+#[allow(non_snake_case)]
+mod App;
+mod common;
 mod components;
-mod enums;
 
 fn main() {
     mount_to_body(|cx| view! { cx,  <App/> })
