@@ -4,6 +4,7 @@ use crate::App::*;
 
 #[allow(non_snake_case)]
 mod App;
+mod common;
 mod components;
 
 fn main() {
