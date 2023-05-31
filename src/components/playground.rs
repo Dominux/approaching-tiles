@@ -63,7 +63,7 @@ impl Playground {
                 tile.y += MOVE_SIZE;
 
                 if let Some(last_y) = last_y {
-                    if tile.y > last_y + TILE_SIZE_N_GAP {
+                    if tile.y > last_y + TILE_SIZE_N_GAP + 1 {
                         tile.y -= MOVE_SIZE * TILE_PULL_SPEED
                     }
                 }
