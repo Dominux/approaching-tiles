@@ -11,6 +11,7 @@ use crate::{
 pub fn App(cx: Scope) -> impl IntoView {
     let init_playground = Playground::new();
     let (playground, set_playground) = create_signal(cx, init_playground);
+    let (score, set_score) = create_signal(cx, usize::default());
 
     let ctx = get_canvas()
         .get_context("2d")
@@ -25,12 +26,11 @@ pub fn App(cx: Scope) -> impl IntoView {
     // listening clicks from user
     canvas_event_listener(ev::click, move |e| {
         let (x, y) = get_canvas_coords(e.x().into(), e.y().into());
-        // log!("x: {}; y: {}", x, y);
-        set_playground.update(|playground| playground.on_click(x, y))
+        set_playground.update(|playground| playground.on_click(x, y, set_score))
     });
 
     view! { cx,
-        <h1 class="playground_header">{"Score"}</h1>
+        <h1 class="playground_header">{"Score: "}{score}</h1>
     }
 }
 

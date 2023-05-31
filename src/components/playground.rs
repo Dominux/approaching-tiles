@@ -1,3 +1,4 @@
+use leptos::{SignalUpdate, WriteSignal};
 use wasm_bindgen::JsValue;
 use web_sys::CanvasRenderingContext2d;
 
@@ -5,8 +6,8 @@ use super::{tile::Tile, tiles_column::draw_tiles_column};
 use crate::common::{
     canvas::clear_canvas,
     constants::{
-        FONT, MOVE_SIZE, SELECTION_MAX, TILE_GAP, TILE_SELECTION_BORDER, TILE_SIZE,
-        TILE_SIZE_IN_MOVES, TILE_SIZE_N_GAP,
+        FONT, MAX_TILES, MOVE_SIZE, SELECTION_MAX, TILE_GAP, TILE_PULL_SPEED,
+        TILE_SELECTION_BORDER, TILE_SIZE, TILE_SIZE_IN_MOVES, TILE_SIZE_N_GAP,
     },
 };
 
@@ -14,6 +15,7 @@ use crate::common::{
 pub struct Playground {
     tiles_cols: Vec<Vec<Tile>>,
     moves_till_tiles_addition: u16,
+    selected_symbols: Vec<String>,
 }
 
 impl Playground {
@@ -21,10 +23,11 @@ impl Playground {
         // generating init tiles
         let tiles_cols = (0..6)
             .map(|col_i| {
-                let y = (col_i * TILE_SIZE_N_GAP) as f64;
-                (0..6)
+                let x = (col_i * TILE_SIZE_N_GAP + TILE_GAP) as f64;
+                (0..4)
+                    .rev()
                     .map(|tile_i| {
-                        let x = (tile_i * TILE_SIZE_N_GAP + TILE_GAP) as f64;
+                        let y = (tile_i * TILE_SIZE_N_GAP) as f64;
                         Tile::new(x, y)
                     })
                     .collect()
@@ -34,6 +37,7 @@ impl Playground {
         Self {
             tiles_cols,
             moves_till_tiles_addition: TILE_SIZE_IN_MOVES,
+            selected_symbols: Vec::with_capacity(SELECTION_MAX),
         }
     }
 
@@ -53,8 +57,18 @@ impl Playground {
 
     pub fn move_playground(&mut self) {
         for col in self.tiles_cols.iter_mut() {
-            for tile in col.iter_mut() {
-                tile.y += MOVE_SIZE
+            let mut last_y = None;
+
+            for tile in col.iter_mut().rev() {
+                tile.y += MOVE_SIZE;
+
+                if let Some(last_y) = last_y {
+                    if tile.y - (TILE_SIZE_N_GAP as f64) > last_y {
+                        tile.y -= MOVE_SIZE * TILE_PULL_SPEED
+                    }
+                }
+
+                last_y = Some(tile.y)
             }
         }
 
@@ -63,8 +77,13 @@ impl Playground {
         if self.moves_till_tiles_addition == 0 {
             // adding next line
             for (i, col) in self.tiles_cols.iter_mut().enumerate() {
+                // checking if we got max tiles
+                if col.len() == MAX_TILES {
+                    panic!()
+                }
+
                 let x = TILE_SIZE_N_GAP * i as u16 + TILE_GAP as u16;
-                let new_tile = Tile::new(x.into(), 0.0);
+                let new_tile = Tile::new(x.into(), f64::default());
                 col.push(new_tile)
             }
 
@@ -72,39 +91,46 @@ impl Playground {
         }
     }
 
-    pub fn on_click(&mut self, x: f64, y: f64) {
-        let mut selected_symbols = Vec::with_capacity(SELECTION_MAX);
+    pub fn on_click(&mut self, x: f64, y: f64, set_score: WriteSignal<usize>) {
+        self.select_symbol(x, y);
 
-        // selecting element and counting selected elements
+        if self.selected_symbols.len() < SELECTION_MAX {
+            return;
+        }
+
+        // checking selected symbols identity
+        if let Some((first, remaining)) = self.selected_symbols.split_first() {
+            if remaining.iter().all(|key| *key == *first) {
+                for col in self.tiles_cols.iter_mut() {
+                    col.retain(|tile| !tile.is_selected)
+                }
+
+                set_score.update(|score| *score += SELECTION_MAX)
+            } else {
+                // unselecting
+                for col in self.tiles_cols.iter_mut() {
+                    for tile in col.iter_mut() {
+                        tile.is_selected = false
+                    }
+                }
+            }
+        }
+
+        self.selected_symbols.clear()
+    }
+
+    fn select_symbol(&mut self, x: f64, y: f64) {
         for col in self.tiles_cols.iter_mut() {
             for tile in col.iter_mut() {
-                if tile.is_selected {
-                    selected_symbols.push(&tile.symbol);
-                } else if tile.x < x
+                if !tile.is_selected
+                    && tile.x < x
                     && tile.y < y
                     && tile.x + TILE_SIZE as f64 > x
                     && tile.y + TILE_SIZE as f64 > y
                 {
                     tile.is_selected = true;
-                    selected_symbols.push(&tile.symbol);
-                }
-            }
-        }
-
-        if selected_symbols.len() < SELECTION_MAX {
-            return;
-        }
-
-        // checking selected symbols identity
-        if let Some((first, remaining)) = selected_symbols.split_first() {
-            if remaining.iter().all(|key| *key == *first) {
-                todo!()
-            }
-        } else {
-            // unselecting
-            for col in self.tiles_cols.iter_mut() {
-                for tile in col.iter_mut() {
-                    tile.is_selected = false
+                    self.selected_symbols.push(tile.symbol.clone());
+                    return;
                 }
             }
         }

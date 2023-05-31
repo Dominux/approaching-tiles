@@ -1,6 +1,9 @@
 use web_sys::CanvasRenderingContext2d;
 
-use crate::common::constants::{TILE_GAP, TILE_HALF_SIZE, TILE_SIZE};
+use crate::common::{
+    constants::{TILE_GAP, TILE_HALF_SIZE, TILE_SIZE},
+    symbols::get_random_symbol,
+};
 
 pub fn draw_tile(ctx: &CanvasRenderingContext2d, tile: &Tile) {
     ctx.fill_rect(tile.x, tile.y, TILE_SIZE.into(), TILE_SIZE.into());
@@ -15,7 +18,7 @@ pub fn draw_tile(ctx: &CanvasRenderingContext2d, tile: &Tile) {
     }
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Tile {
     pub x: f64,
     pub y: f64,
@@ -28,7 +31,7 @@ impl Tile {
         Self {
             x,
             y,
-            symbol: "🍆".to_string(),
+            symbol: get_random_symbol(),
             is_selected: false,
         }
     }
