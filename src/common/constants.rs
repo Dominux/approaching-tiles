@@ -7,5 +7,5 @@ pub const TILE_SELECTION_BORDER: u16 = 30;
 pub const TILE_SIZE_N_GAP: u16 = TILE_SIZE + TILE_GAP;
 pub const MOVE_SIZE: u16 = 3;
 pub const TILE_PULL_SPEED: u16 = 10;
-pub const TILE_SIZE_IN_MOVES: u16 = TILE_SIZE_N_GAP / MOVE_SIZE - 2; // I genuinely have no idea why but this it works much smoother
+pub const TILE_SIZE_IN_MOVES: u16 = TILE_SIZE_N_GAP / MOVE_SIZE;
 pub const FONT: &str = "28px serif";
