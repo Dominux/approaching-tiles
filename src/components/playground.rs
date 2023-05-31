@@ -4,7 +4,7 @@ use web_sys::CanvasRenderingContext2d;
 
 use super::{tile::Tile, tiles_column::draw_tiles_column};
 use crate::common::{
-    canvas::clear_canvas,
+    canvas::{clear_canvas, convert_to_canvas_coords},
     constants::{
         FONT, MAX_TILES, MOVE_SIZE, SELECTION_MAX, TILE_GAP, TILE_PULL_SPEED,
         TILE_SELECTION_BORDER, TILE_SIZE, TILE_SIZE_IN_MOVES, TILE_SIZE_N_GAP,
@@ -23,11 +23,11 @@ impl Playground {
         // generating init tiles
         let tiles_cols = (0..6)
             .map(|col_i| {
-                let x = (col_i * TILE_SIZE_N_GAP + TILE_GAP) as f64;
+                let x = col_i * TILE_SIZE_N_GAP + TILE_GAP;
                 (0..4)
                     .rev()
                     .map(|tile_i| {
-                        let y = (tile_i * TILE_SIZE_N_GAP) as f64;
+                        let y = tile_i * TILE_SIZE_N_GAP;
                         Tile::new(x, y)
                     })
                     .collect()
@@ -47,7 +47,7 @@ impl Playground {
         // setting styles
         ctx.set_fill_style(&JsValue::from_str("aqua"));
         ctx.set_stroke_style(&JsValue::from_str("red"));
-        ctx.set_line_width(TILE_SELECTION_BORDER);
+        ctx.set_line_width(convert_to_canvas_coords(TILE_SELECTION_BORDER));
         ctx.set_font(FONT);
 
         for col in self.tiles_cols.iter() {
@@ -63,7 +63,7 @@ impl Playground {
                 tile.y += MOVE_SIZE;
 
                 if let Some(last_y) = last_y {
-                    if tile.y - (TILE_SIZE_N_GAP as f64) > last_y {
+                    if tile.y > last_y + TILE_SIZE_N_GAP {
                         tile.y -= MOVE_SIZE * TILE_PULL_SPEED
                     }
                 }
@@ -74,24 +74,26 @@ impl Playground {
 
         // checking if empty place for the next tiles line is ready
         self.moves_till_tiles_addition -= 1;
-        if self.moves_till_tiles_addition == 0 {
-            // adding next line
-            for (i, col) in self.tiles_cols.iter_mut().enumerate() {
-                // checking if we got max tiles
-                if col.len() == MAX_TILES {
-                    panic!()
-                }
+        if self.moves_till_tiles_addition != 0 {
+            return;
+        }
 
-                let x = TILE_SIZE_N_GAP * i as u16 + TILE_GAP as u16;
-                let new_tile = Tile::new(x.into(), f64::default());
-                col.push(new_tile)
+        // adding next line
+        for (i, col) in self.tiles_cols.iter_mut().enumerate() {
+            // checking if we got max tiles
+            if col.len() == MAX_TILES {
+                panic!()
             }
 
-            self.moves_till_tiles_addition = TILE_SIZE_IN_MOVES
+            let x = TILE_SIZE_N_GAP * i as u16 + TILE_GAP;
+            let new_tile = Tile::new(x, u16::default());
+            col.push(new_tile)
         }
+
+        self.moves_till_tiles_addition = TILE_SIZE_IN_MOVES;
     }
 
-    pub fn on_click(&mut self, x: f64, y: f64, set_score: WriteSignal<usize>) {
+    pub fn on_click(&mut self, x: u16, y: u16, set_score: WriteSignal<usize>) {
         self.select_symbol(x, y);
 
         if self.selected_symbols.len() < SELECTION_MAX {
@@ -119,14 +121,14 @@ impl Playground {
         self.selected_symbols.clear()
     }
 
-    fn select_symbol(&mut self, x: f64, y: f64) {
+    fn select_symbol(&mut self, x: u16, y: u16) {
         for col in self.tiles_cols.iter_mut() {
             for tile in col.iter_mut() {
                 if !tile.is_selected
                     && tile.x < x
                     && tile.y < y
-                    && tile.x + TILE_SIZE as f64 > x
-                    && tile.y + TILE_SIZE as f64 > y
+                    && tile.x + TILE_SIZE > x
+                    && tile.y + TILE_SIZE > y
                 {
                     tile.is_selected = true;
                     self.selected_symbols.push(tile.symbol.clone());

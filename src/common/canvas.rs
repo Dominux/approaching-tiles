@@ -31,9 +31,20 @@ pub fn canvas_event_listener<E: ev::EventDescriptor + 'static>(
     });
 }
 
-pub fn get_canvas_coords(x: f64, y: f64) -> (f64, f64) {
+pub fn get_canvas_coords(x: u16, y: u16) -> (u16, u16) {
     let dom_rect = get_canvas().get_bounding_client_rect();
-    (x - dom_rect.x(), y - dom_rect.y())
+    (
+        x - convert_from_canvas_coords(dom_rect.x()),
+        y - convert_from_canvas_coords(dom_rect.y()),
+    )
+}
+
+pub fn convert_to_canvas_coords(n: u16) -> f64 {
+    n as f64 / 10.0
+}
+
+pub fn convert_from_canvas_coords(n: f64) -> u16 {
+    (n * 10.0).round() as u16
 }
 
 pub fn clear_canvas() {

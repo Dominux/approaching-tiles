@@ -25,7 +25,7 @@ pub fn App(cx: Scope) -> impl IntoView {
 
     // listening clicks from user
     canvas_event_listener(ev::click, move |e| {
-        let (x, y) = get_canvas_coords(e.x().into(), e.y().into());
+        let (x, y) = get_canvas_coords((e.x() * 10) as u16, (e.y() * 10) as u16);
         set_playground.update(|playground| playground.on_click(x, y, set_score))
     });
 
